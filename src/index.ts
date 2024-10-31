@@ -1,7 +1,7 @@
 const http = require('http');
 const si = require('systeminformation');
 
-const PORT = 8000;
+const PORT = 5000;
 
 // Fonction pour obtenir les informations sur le CPU
 export const getCpuInfo = async () => {
