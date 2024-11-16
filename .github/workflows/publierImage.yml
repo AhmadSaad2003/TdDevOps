@@ -1,0 +1,49 @@
+name: Node.js Application
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v2
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '20.18.0' 
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Run tests
+      run: npm test
+
+    - name: Build Docker Image 
+      run: docker build -t ${{ secrets.DOCKERUSERNAME }}/publishing:latest -t ghcr.io/${{ secrets.GITHUBUSERNAME }}/publishing:latest .
+
+    - name: Login to Docker Hub
+      env:
+        DOCKER_USERNAME: ${{ secrets.DOCKERUSERNAME }}
+        DOCKER_PASSWORD: ${{ secrets.DOCKERPASS }}
+      run: |
+        echo "${DOCKER_PASSWORD}" | docker login -u "${DOCKERUSERNAME}" --password-stdin
+
+    - name: Login to GitHub Container Registry
+      env:
+        GHCR_TOKEN: ${{ secrets.GITHUBTOKEN }}
+        GHCR_USERNAME: ${{ secrets.GITHUBUSERNAME }}
+      run: |
+        echo "${GITHUBTOKEN}" | docker login ghcr.io -u "${GITHUBUSERNAME}" --password-stdin
+
+    - name: Push Image to Docker Hub
+      run: docker push ${{ secrets.DOCKERUSERNAME }}/publishing:latest
+
+    - name: Push Image to GitHub Container Registry
+      run: docker push ghcr.io/${{ secrets.GITHUBUSERNAME }}/publishing:latest
