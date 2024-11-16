@@ -33,7 +33,7 @@ jobs:
         DOCKER_USERNAME: ${{ secrets.DOCKERUSERNAME }}
         DOCKER_PASSWORD: ${{ secrets.DOCKERPASS }}
       run: |
-        echo "${DOCKERPASS}" | docker login -u "${DOCKERUSERNAME}" --password-stdin
+        echo "${DOCKER_PASSWORD}" | docker login -u "${DOCKER_USERNAME}" --password-stdin
 
     - name: Login to GitHub Container Registry
       env:
